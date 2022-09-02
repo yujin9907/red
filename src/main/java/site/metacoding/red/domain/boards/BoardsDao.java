@@ -2,6 +2,7 @@ package site.metacoding.red.domain.boards;
 
 import java.util.List;
 
+import site.metacoding.red.domain.boards.mapper.BoardDetail;
 import site.metacoding.red.web.dto.request.boards.WriteDto;
 
 
@@ -11,4 +12,6 @@ public interface BoardsDao {
 	public List<Boards> findAll();
 	public void update(Boards boards);
 	public void delete(Integer id);
+	
+	public BoardDetail findByIdToDetail(Integer id);
 }

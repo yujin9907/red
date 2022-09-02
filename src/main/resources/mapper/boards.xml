@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="site.metacoding.red.domain.boards.BoardDao">
+<mapper namespace="site.metacoding.red.domain.boards.BoardsDao">
 	
 	<insert id="insert">
 		INSERT INTO boards(id, title, content, usersId, createdAt) 
@@ -25,4 +25,12 @@
 	<delete id="delete">
 		DELETE FROM boards WHERE id=#{id}
 	</delete>
+	
+	<select id="findByIdToDetail" resultType="site.metacoding.red.domain.boards.mapper.BoardDetail">
+		SELECT b.id, b.title, b.content, b.usersId, b.createdAt,
+				u.id,u.username, u.password, u.email
+		FROM boards b INNER FOIN users u
+		ON b.usersId = u.id
+		WHERE b.id = #{id}
+	</select>
 </mapper>
