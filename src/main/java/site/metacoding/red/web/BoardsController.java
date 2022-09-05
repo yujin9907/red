@@ -1,8 +1,11 @@
 package site.metacoding.red.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +15,7 @@ import site.metacoding.red.domain.boards.Boards;
 import site.metacoding.red.domain.boards.BoardsDao;
 import site.metacoding.red.domain.users.Users;
 import site.metacoding.red.web.dto.request.baords.WriteDto;
+import site.metacoding.red.web.dto.response.boards.MainDto;
 
 @RequiredArgsConstructor
 @Controller
@@ -20,24 +24,10 @@ public class BoardsController {
 	private final HttpSession session; // final을 붙이는 이유 -> 롬북으로 세션자 리콰이어아규멘트 이용하기 위해서
 	private final BoardsDao boardsDao;
 
-	@PostMapping("/boards")
-	public String writeBoards(WriteDto writeDto) {
-		Users principal = (Users) session.getAttribute("principal");
-
-		// 리팩토링-인증 ; 이런 if-else는 좋은 코드가 아님...
-		if (principal == null) {
-			return "redirect:/loginForm";
-		}
-		
-		// 본코드 리팩토링
-		
-		boardsDao.insert(writeDto.toEntity(principal.getId())); // 
-		return "redirect:/";
-
-	}
-
 	@GetMapping({ "/", "/boards" })
-	public String getBoardList() {
+	public String getBoardList(Model model) {
+		List<MainDto> boardsList = boardsDao.findAll();
+		model.addAttribute("boardsList", boardsList);
 		return "boards/main";
 	}
 
@@ -56,5 +46,16 @@ public class BoardsController {
 		}
 		return "boards/writeForm";
 
+	}
+	
+	// 글쓰기 구현
+	@PostMapping("/boards")
+	public String writeBoards(WriteDto writeDto) {
+		Users principal = (Users) session.getAttribute("principal");
+		if(principal == null) {
+			return "redirect:/loginForm";
+		}
+		boardsDao.insert(writeDto.toEntity(principal.getId()));
+		return "board/writeForm";
 	}
 }
