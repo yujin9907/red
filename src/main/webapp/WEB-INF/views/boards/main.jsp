@@ -13,14 +13,22 @@
 			</tr>
 		</thead>
 		<tbody>
-		    <!-- 여기에 forEach 필요하겠죠? -->
-			<tr>
-				<td>1</td>
-				<td><a href="/boards/1">스프링1강</a></td>
-				<td>ssar</td>
-			</tr>
+		    <c:forEach var="boards" items="${boardsList}">
+		    	<tr>
+					<td>${boards.id}</td>
+					<td><a href="/boards/${boards.id}">${boards.title}</a></td>
+					<td>${boards.username}</td>
+				</tr>
+		    </c:forEach>
+			
 		</tbody>
 	</table>
+	
+	<h2>${param.page}</h2>
+	<ul class="pagination">
+		<li class="page-item"><a class="page-link" href="/?page=${param.page -1}">previous</a></li>
+		<li class="page-item"><a class="page-link" href="/?page=${param.page + 1}">Next</a></li>
+	</ul>
 
 
 </div>

@@ -25,8 +25,12 @@ public class BoardsController {
 	private final BoardsDao boardsDao;
 
 	@GetMapping({ "/", "/boards" })
-	public String getBoardList(Model model) {
-		List<MainDto> boardsList = boardsDao.findAll();
+	public String getBoardList(Model model, Integer page, MainDto mainDto) {
+		if(page==null) page=0;
+		
+		int startNum = page = page*10; // 10개 단위로 담페이지
+		List<MainDto> boardsList = boardsDao.findAll(startNum);
+		
 		model.addAttribute("boardsList", boardsList);
 		return "boards/main";
 	}
@@ -45,7 +49,6 @@ public class BoardsController {
 			return "redirect:/loginForm"; // -> 리다이렉트 하는 이유? 이미 메서드가 있으니까 파일을 열 필요없이 재사용해야됨 무조건(단일책임원칙 같은 걸 생각을 해보자)
 		}
 		return "boards/writeForm";
-
 	}
 	
 	// 글쓰기 구현
@@ -56,6 +59,6 @@ public class BoardsController {
 			return "redirect:/loginForm";
 		}
 		boardsDao.insert(writeDto.toEntity(principal.getId()));
-		return "board/writeForm";
+		return "redirect:/";
 	}
 }

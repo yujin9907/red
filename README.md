@@ -21,6 +21,18 @@ INCREMENT BY 1
 START WITH 1;
 ```
 
+### 보드
+```sql
+create table boards(
+    id number primary key,
+    title varchar2(150),
+    content clob,
+    usersId number,
+    createdAt TIMESTAMP,
+    CONSTRAINT boards_users_fk foreign key(usersId) references users(id)
+);
+```
+
 ### 더미데이터 추가
 ```sql
 insert into users(id, username, password, email, createdAt) values(users_seq.nextval, 'ssar', '1234', 'ssar@nate.com', sysdate);
