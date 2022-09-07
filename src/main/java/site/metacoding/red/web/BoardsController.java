@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
+
 import lombok.RequiredArgsConstructor;
 import site.metacoding.red.domain.boards.Boards;
 import site.metacoding.red.domain.boards.BoardsDao;
@@ -58,7 +60,9 @@ public class BoardsController {
 	}
 
 	@GetMapping("/boards/{id}")
-	public String getBoardList(@PathVariable Integer id) {
+	public String getBoardList(@PathVariable Integer id, Model model) {
+		Boards boards = boardsDao.findById(id);
+		model.addAttribute("boards", boards);
 		return "boards/detail";
 	}
 
@@ -81,6 +85,33 @@ public class BoardsController {
 			return "redirect:/loginForm";
 		}
 		boardsDao.insert(writeDto.toEntity(principal.getId()));
+		return "redirect:/";
+	}
+	
+	// 삭제 js 없이
+	@PostMapping("/boards/{id}/delete")
+	public String deleteBoards(@PathVariable Integer id) {
+		// 왜 영속화를 시켜서 조건에 맞아야 딜리트를 실행할까? 
+		// 데이터베이스는 트랜잭션 시 부하가 가장 큼
+		// 트랜잭션 시 아이솔레이션에 의해, 다른 새끼들은 못 함. 즉, select를 하는 게 delete, insert 이런 거 하는 거보다 나음. select로 검사 먼저 해야 됨
+		// 다이렉트로 딜리트 했는데 없으면 트랜잭션 부하 손해임으로
+		
+		// 영속화
+		Boards boardsPS = boardsDao.findById(id);
+		
+		// 인증, 권한 체크
+		Users principal = (Users) session.getAttribute("principal");
+		if (principal == null) {
+			return "redirect:/boards/"+id;
+		}
+		if (principal.getId()!=boardsPS.getId()){
+			return "redirect:/boards/"+id;
+		}
+		
+		if(boardsPS == null) { // if는 비정상 로직을 타게 해서 걸러내는 필터 역할을 하는 게 좋음(권장)
+			return "redirect:/boards/"+id; // 상세보기 주소로 돌아가기(제자리)
+		}
+		boardsDao.delete(id);
 		return "redirect:/";
 	}
 }

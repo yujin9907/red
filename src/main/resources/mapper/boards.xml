@@ -13,7 +13,7 @@
 
 	<select id="findById"
 		resultType="site.metacoding.red.domain.boards.Boards">
-
+		SELECT * FROM boards WHERE id=#{id}
 	</select>
 
 	<select id="findAll"
@@ -49,7 +49,7 @@
 	</update>
 
 	<delete id="delete">
-
+		DELECT FROM boards WHERE id=#{id}
 	</delete>
 
 </mapper>
