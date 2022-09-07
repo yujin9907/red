@@ -16,6 +16,7 @@ import site.metacoding.red.domain.boards.BoardsDao;
 import site.metacoding.red.domain.users.Users;
 import site.metacoding.red.web.dto.request.baords.WriteDto;
 import site.metacoding.red.web.dto.response.boards.MainDto;
+import site.metacoding.red.web.dto.response.boards.PagingDto;
 
 @RequiredArgsConstructor
 @Controller
@@ -27,11 +28,32 @@ public class BoardsController {
 	@GetMapping({ "/", "/boards" })
 	public String getBoardList(Model model, Integer page, MainDto mainDto) {
 		if(page==null) page=0;
+		int startNum = page*3; // 10개 단위로 담페이지
 		
-		int startNum = page = page*10; // 10개 단위로 담페이지
 		List<MainDto> boardsList = boardsDao.findAll(startNum);
 		
+		PagingDto paging = boardsDao.paging(page);
+		Integer currentPage = paging.getCurrentPage();
+		Integer totalPage = paging.getTotalPage();
+	
+		Integer count= 5;
+		Integer start = ((currentPage/count) * count)+1;
+		Integer block = (currentPage/count)+1;
+		Integer last=((currentPage/count)+1) * count;
+		
+		// 마지막은 어쩔 수 없는...
+		if(paging.getTotalPage()<last) {
+			last = paging.getTotalPage();
+		}
+		
+		paging.setStartPageNum(start);
+		paging.setLastPageNum(last);
+		paging.setBlockPage(block);
+		paging.setBlockPageCount(count);
+		
+		model.addAttribute("paging", paging);
 		model.addAttribute("boardsList", boardsList);
+		
 		return "boards/main";
 	}
 
