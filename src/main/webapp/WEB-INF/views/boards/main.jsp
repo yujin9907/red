@@ -4,6 +4,19 @@
 <%@ include file="../layout/header.jsp"%>
 
 <div class="container">
+	<!-- 반응형 때문에 컨테이너 안에 넣어줘야 됨
+	폼컨트룰 블럭속성으로 바뀜 -->
+	<!-- !!!!!!!부모의 크기를 벗어날 수 없음 -->
+	<br/>
+	<div class="d-flex justify-content-end">
+	<div style="width:300px">
+	<form class="d-flex" method="get" action="/"> <!-- 셀렉트할 거니까 겟 -->
+        <input class="form-control me-2" type="text" placeholder="Search" name="keyword"> <!-- 폼태그니까 이걸 쿼리스트링으로 보내도 됨 직접 액션에 주소 안 걸고 하이퍼링크도 되는데 정적인 값이므로.. -->
+        <button class="btn btn-primary" type="submit">Search</button>
+      </form>
+	</div>
+	</div>
+	
 	<table class="table table-striped">
 		<thead>
 			<tr>
@@ -44,14 +57,14 @@
 	<div class="d-flex justify-content-center">
 	<ul class="pagination">
 		<li class='page-item ${paging.first?"disabled":""}'><a class="page-link"
-			href="/?page=${param.page -1}">previous</a></li>
+			href="/?keyword=${paging.keyword}&page=${param.page -1}">previous</a></li>
 		
 		<c:forEach var="i" begin="${paging.startPageNum}" end="${paging.lastPageNum}">    
-			<li class='page-item ${paging.currentPage == num-1 ? "active":""}'><a class="page-link" href="/?page=${i-1}">${i}</a></li>
+			<li class='page-item ${paging.currentPage == num-1 ? "active":""}'><a class="page-link" href="/?keyword=${paging.keyword}&page=${i-1}">${i}</a></li>
 		</c:forEach>
 		
 		<li class='page-item ${paging.last?"disabled":""}'><a class="page-link"
-			href="/?page=${param.page + 1}">Next</a></li>
+			href="/?keyword=${paging.keyword}&page=${paging.currentPage+1}">Next</a></li>
 	</ul>
 	</div>
 

@@ -15,6 +15,19 @@
 		resultType="site.metacoding.red.domain.boards.Boards">
 		SELECT * FROM boards WHERE id=#{id}
 	</select>
+	
+	<select id="findSearch"
+		resultType="site.metacoding.red.web.dto.response.boards.MainDto">
+		SELECT b.id, b.title, u.username
+		FROM boards b
+		INNER JOIN
+		users u
+		ON b.usersId = u.id
+		WHERE title like '%'||#{keyword}||'%'
+		ORDER BY b.id DESC
+		offset #{startNum} rows
+		fetch next 3 rows only
+	</select>
 
 	<select id="findAll"
 		resultType="site.metacoding.red.web.dto.response.boards.MainDto">
@@ -40,6 +53,9 @@
 		select count(*) totalCount, ceil(count(*)/3) totalPage, #{page} currentPage, 0
 		first, 0 last
 		FROM boards
+		<if test="keyword!=null">
+		WHERE title like '%'||#{keyword}||'%'
+		</if>
 		)
 	</select>
 

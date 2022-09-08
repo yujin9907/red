@@ -24,6 +24,8 @@ public class PagingDto {
 	// ?page=5 기준 blockPage = 2, startPageNum = 6, lastPageNum = 10, blockPageCount
 	// = 6, 7, 8, 9, 10 (5개)
 	
+	private String keyword;
+	
 	public PagingDto(Integer totalCount, Integer totalPage, Integer currentPage,boolean isFirst, boolean isLast) {
 		this.totalCount=totalCount;
 		this.totalPage=totalPage;
