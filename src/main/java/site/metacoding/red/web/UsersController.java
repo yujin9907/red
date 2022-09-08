@@ -5,15 +5,19 @@ import javax.servlet.http.HttpSession;
 import javax.websocket.Session;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.PackagePrivate;
+import site.metacoding.red.domain.boards.Boards;
 import site.metacoding.red.domain.users.Users;
 import site.metacoding.red.domain.users.UsersDao;
 import site.metacoding.red.web.dto.request.users.JoinDto;
 import site.metacoding.red.web.dto.request.users.LoginDto;
+import site.metacoding.red.web.dto.request.users.userUpdateDto;
 
 @RequiredArgsConstructor // 디펜더시 인젝션
 @Controller
@@ -65,5 +69,29 @@ public class UsersController {
 	@GetMapping("/joinForm")
 	public String joinForm() {
 		return "users/joinForm";
+	}
+	
+	@GetMapping("/updateForm")
+	public String usersUpdateForm(Model model) {
+		Users principal = (Users) sessoin.getAttribute("principal");
+		if (principal == null) {
+			return "errors/badPage";
+		}
+		System.out.println(principal.getId());
+		model.addAttribute("principal", principal);
+		return "users/updateForm";
+	}
+	
+	@PostMapping("/update/{id}")
+	public String usersUpdate(@PathVariable Integer id, userUpdateDto userUpdateDto) {
+		Users usersPS = usersDao.findById(id);
+		if(usersPS==null) {
+			return "errors/badPage";
+		}
+		usersPS.유저수정(userUpdateDto);
+		usersDao.update(usersPS);
+		
+		return "redirect:/";
+		
 	}
 }
