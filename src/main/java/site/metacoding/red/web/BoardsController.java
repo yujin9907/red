@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 
@@ -17,6 +18,7 @@ import site.metacoding.red.domain.boards.Boards;
 import site.metacoding.red.domain.boards.BoardsDao;
 import site.metacoding.red.domain.users.Users;
 import site.metacoding.red.web.dto.request.baords.WriteDto;
+import site.metacoding.red.web.dto.request.baords.updateDto;
 import site.metacoding.red.web.dto.response.boards.MainDto;
 import site.metacoding.red.web.dto.response.boards.PagingDto;
 
@@ -90,11 +92,18 @@ public class BoardsController {
 	
 	// 삭제 js 없이
 	@PostMapping("/boards/{id}/delete")
-	public String deleteBoards(@PathVariable Integer id) {
+	public String deleteBoards(@PathVariable Integer id) { // 리스폰 붙이면 데이터 리턴으로 바뀜
 		// 왜 영속화를 시켜서 조건에 맞아야 딜리트를 실행할까? 
 		// 데이터베이스는 트랜잭션 시 부하가 가장 큼
 		// 트랜잭션 시 아이솔레이션에 의해, 다른 새끼들은 못 함. 즉, select를 하는 게 delete, insert 이런 거 하는 거보다 나음. select로 검사 먼저 해야 됨
 		// 다이렉트로 딜리트 했는데 없으면 트랜잭션 부하 손해임으로
+		
+		// js 배우고 할 것 history.back, location.href= 를 통해 redirect 간편하게 사용 가능
+//		StringBuffer sb = new StringBuffer();
+//		sb.append("<script>");
+//		sb.append("locatonlkdsjsdf");
+//		return sb.toString(); // 이런식으로 자바스크립트를 데이터로 직접 넣음
+		
 		
 		// 영속화
 		Boards boardsPS = boardsDao.findById(id);
@@ -102,16 +111,69 @@ public class BoardsController {
 		// 인증, 권한 체크
 		Users principal = (Users) session.getAttribute("principal");
 		if (principal == null) {
-			return "redirect:/boards/"+id;
+			return "errors/badPage";
 		}
 		if (principal.getId()!=boardsPS.getId()){
-			return "redirect:/boards/"+id;
+			return "errors/badPage";
 		}
 		
 		if(boardsPS == null) { // if는 비정상 로직을 타게 해서 걸러내는 필터 역할을 하는 게 좋음(권장)
-			return "redirect:/boards/"+id; // 상세보기 주소로 돌아가기(제자리)
+			return "errors/badPage"; // 상세보기 주소로 돌아가기(제자리)
 		}
 		boardsDao.delete(id);
 		return "redirect:/";
+	}
+	
+	@GetMapping("/boards/{id}/updateForm") // 보드테이블에 있는 key.게시글을 업데이트할 폼을 주소 : 말이 되는 주소 : restfull api : 자원에 접근하는 주소를 설계하는 방식 => 주소설계규칙 검색하면 나옴, 말이 되게 읽히는 공부를 하면 됨
+	// 많이 해봐야 어쩌고 자연스럽게 슬 수 있음. 연습을 많이 해야 어차피 강제는 아니니까 천천히
+	public String updateForm(@PathVariable Integer id, Model model) {
+		Boards boardsPS = boardsDao.findById(id);
+		Users principal = (Users) session.getAttribute("principal");
+		System.out.println(boardsPS);
+		System.out.println(principal);
+		// 비정상요청 처리
+		if(boardsPS == null) { 
+			return "errors/badPage";
+		}
+		if (principal == null) {
+			return "errors/badPage";
+		}
+		if (principal.getId()==boardsPS.getId()) {
+			return "errors/badPage";
+		}
+		
+		
+		model.addAttribute("boards", boardsPS);
+		
+		return "boards/updateForm";
+	}
+	
+	//업데이트를 완료하고 무슨 페이지를 반환할까 사용자들이 가장 많이 가는 곳, 분석하는 사이트가 있음 ux를 위해서, 구글의 에널리틱스 검색(자바스크립트 알아야 할 수 있음)
+	@PostMapping("/boards/{id}/update")
+	public String update(@PathVariable Integer id, updateDto updateDto) {
+		// update, insert dto를 같이 쓰기 위해서 saveDto 이런식으로 사용하기도 함
+		
+		// 1. 영속화
+		Boards boardsPS = boardsDao.findById(id);
+		Users principal = (Users) session.getAttribute("principal");
+		
+		// 비정상요청 처리
+		if(boardsPS == null) { 
+			return "errors/badPage";
+		}
+		if (principal == null) {
+			return "errors/badPage";
+		}
+		if (principal.getId()==boardsPS.getId()) {
+			return "errors/badPage";
+		}
+		
+		// 2. 변경
+		boardsPS.글수정(updateDto);
+		
+		// 3. 수행
+		boardsDao.update(boardsPS);
+		
+		return "redirect:/boards/"+id; //ux에 따라서 달라짐
 	}
 }

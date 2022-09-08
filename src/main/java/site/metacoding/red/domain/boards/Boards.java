@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import site.metacoding.red.web.dto.request.baords.updateDto;
 
 @Getter
 @AllArgsConstructor
@@ -20,6 +21,10 @@ public class Boards {
 		this.title = title;
 		this.content = content;
 		this.usersId = usersId;
+	}
+	public void 글수정(updateDto updateDto) {
+		this.title=updateDto.getTitle();
+		this.content=updateDto.getContent();
 	}
 	
 }
