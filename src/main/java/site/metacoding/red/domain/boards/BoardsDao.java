@@ -18,4 +18,8 @@ public interface BoardsDao {
 	public void delete(Integer id);
 	
 	public List<MainDto> findSearch(@Param("startNum") int startNum, @Param("keyword") String keyword);
+
+
+	public void usersIdDelete(Integer id);
+	public Boards findByUsersId(Integer id);
 }

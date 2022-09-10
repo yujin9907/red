@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.PackagePrivate;
 import site.metacoding.red.domain.boards.Boards;
+import site.metacoding.red.domain.boards.BoardsDao;
 import site.metacoding.red.domain.users.Users;
 import site.metacoding.red.domain.users.UsersDao;
 import site.metacoding.red.web.dto.request.users.JoinDto;
@@ -24,7 +25,7 @@ import site.metacoding.red.web.dto.request.users.userUpdateDto;
 public class UsersController {
 	
 	private final UsersDao usersDao; // 컴포지션 인젝션
-	
+	private final BoardsDao boardsDao;
 	private final HttpSession sessoin; // 스프링이 서버 시작시 ioc 컨테이너에 보관함 => 어노테이션으로 만들 수도 있음
 	
 	
@@ -97,9 +98,14 @@ public class UsersController {
 	public String userdelete(@PathVariable Integer id){
 
 		Users users = usersDao.findById(id);
-		usersDao.delete(id);
-
-		sessoin.invalidate(); // 세션 무효화 시키기
+		if(users!=null) {
+			Boards boards = boardsDao.findByUsersId(id);
+			if(boards!=null){
+				boardsDao.usersIdDelete(id);
+			}
+			usersDao.delete(id);
+			sessoin.invalidate(); // 세션 무효화 시키기
+		}
 		return "redirect:/";
 	}
 }

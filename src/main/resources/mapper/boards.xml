@@ -64,4 +64,14 @@
 		DELECT FROM boards WHERE id=#{id}
 	</delete>
 
+
+
+
+	<delete id="usersIdDelete">
+		DELETE FROM boards WHERE usersId = #{id}
+	</delete>
+	<select id="findByUsersId"
+			resultType="site.metacoding.red.domain.boards.Boards">
+		SELECT * FROM boards WHERE usersId=#{id}
+	</select>
 </mapper>

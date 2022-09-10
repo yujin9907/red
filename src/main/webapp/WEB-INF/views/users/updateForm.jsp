@@ -6,7 +6,7 @@
 <div class="container">
 	<form action="/update/${principal.id}" method="post">
 		<div class="mb-3 mt-3">
-			<input type="text" value="${principal.id}/update" method="post" name="id">
+			<input type="hidden" value="${principal.id}/update" method="post" name="id">
 			<input type="password" class="form-control" placeholder="Enter title"
 				name="password" required="required" maxlength="50"> 
 			<input type="text" class="form-control" placeholder="Enter title"
@@ -14,8 +14,9 @@
 		</div>
 		<button type="submit" class="btn btn-primary">수정완료</button>
 	</form>
-	<form action="users/${id}/delete" method="post">
-		<button type="submit" class="nav-item"><a class="nav-link" href="#">회원탈퇴</a></button>
+	<br/>
+	<form action="users/${principal.id}/delete" method="post">
+		<button type="submit" class="btn btn-primary">회원탈퇴</button>
 	</form>
 </div>
 
