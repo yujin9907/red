@@ -12,8 +12,10 @@
 			<input type="text" class="form-control" placeholder="Enter title"
 				name="email" value="${principal.email}" required="required" maxlength="50"> 
 		</div>
-		
 		<button type="submit" class="btn btn-primary">수정완료</button>
+	</form>
+	<form action="users/${id}/delete" method="post">
+		<button type="submit" class="nav-item"><a class="nav-link" href="#">회원탈퇴</a></button>
 	</form>
 </div>
 

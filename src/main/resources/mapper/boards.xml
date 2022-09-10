@@ -5,10 +5,8 @@
 <mapper namespace="site.metacoding.red.domain.boards.BoardsDao">
 
 	<insert id="insert">
-		INSERT INTO boards(id, title, content, usersId,
-		createdAt)
-		VALUES(boards_seq.nextval, #{title}, #{content}, #{usersId},
-		sysdate)
+		INSERT INTO boards(title, content, usersId,createdAt)
+		VALUES(#{title}, #{content}, #{usersId}, now())
 	</insert>
 
 	<select id="findById"
@@ -25,8 +23,7 @@
 		ON b.usersId = u.id
 		WHERE title like '%'||#{keyword}||'%'
 		ORDER BY b.id DESC
-		offset #{startNum} rows
-		fetch next 3 rows only
+		limit 3 offset  #{startNum}
 	</select>
 
 	<select id="findAll"
@@ -37,8 +34,7 @@
 		users u
 		ON b.usersId = u.id
 		ORDER BY b.id DESC
-		offset #{startNum} rows
-		fetch next 3 rows only
+		limit 3 offset #{startNum}
 	</select>
 
 	<select id="paging"
@@ -46,8 +42,8 @@
 		SELECT totalCount,
 		totalPage,
 		currentPage,
-		decode(currentPage, 0, 1, 0) first,
-		decode(currentPage, totalPage-1, 1, 0) last
+		case when currentPage=0 then 1 else 0 end as first,
+		case when currentPage=totalPage-1 then 1 else 0 end as last
 		FROM
 		(
 		select count(*) totalCount, ceil(count(*)/3) totalPage, #{page} currentPage, 0
@@ -56,13 +52,12 @@
 		<if test="keyword!=null">
 		WHERE title like '%'||#{keyword}||'%'
 		</if>
-		)
+		) b
 	</select>
 
 
 	<update id="update">
 		UPDATE boards SET title = #{title}, content =#{content} WHERE id=#{id}
-		
 	</update>
 
 	<delete id="delete">

@@ -92,6 +92,14 @@ public class UsersController {
 		usersDao.update(usersPS);
 		
 		return "redirect:/";
-		
+	}
+	@PostMapping("/users/{id}/delete")
+	public String userdelete(@PathVariable Integer id){
+
+		Users users = usersDao.findById(id);
+		usersDao.delete(id);
+
+		sessoin.invalidate(); // 세션 무효화 시키기
+		return "redirect:/";
 	}
 }
