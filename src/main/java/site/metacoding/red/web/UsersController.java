@@ -20,6 +20,8 @@ import site.metacoding.red.web.dto.request.users.JoinDto;
 import site.metacoding.red.web.dto.request.users.LoginDto;
 import site.metacoding.red.web.dto.request.users.userUpdateDto;
 
+import java.util.List;
+
 @RequiredArgsConstructor // 디펜더시 인젝션
 @Controller
 public class UsersController {
@@ -99,13 +101,16 @@ public class UsersController {
 
 		Users users = usersDao.findById(id);
 		if(users!=null) {
-			Boards boards = boardsDao.findByUsersId(id);
-			if(boards!=null){
-				boardsDao.usersIdDelete(id);
+			List<Boards> boards = boardsDao.findByUsersId(id);
+				if(boards!=null) {
+					for (Boards b : boards) {
+						Integer bid = b.getId();
+						boardsDao.updateAnony(bid);
+					}
+				}
+				usersDao.delete(id);
+				sessoin.invalidate(); // 세션 무효화 시키기
 			}
-			usersDao.delete(id);
-			sessoin.invalidate(); // 세션 무효화 시키기
+			return "redirect:/";
 		}
-		return "redirect:/";
-	}
 }
