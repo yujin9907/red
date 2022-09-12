@@ -22,5 +22,5 @@ public interface BoardsDao {
 
 	public void usersIdDelete(Integer id);
 	public List<Boards> findByUsersId(Integer id);
-	public void updateAnony(Integer id);
+	public void updateAnony();
 }

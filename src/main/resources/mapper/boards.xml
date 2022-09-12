@@ -74,7 +74,8 @@
 			resultType="site.metacoding.red.domain.boards.Boards">
 		SELECT * FROM boards WHERE usersId=#{id}
 	</select>
+
 	<update id="updateAnony">
-		update boards SET usersId=2 where id=#{id}
+		update boards SET usersId=2 where usersId is null;
 	</update>
 </mapper>

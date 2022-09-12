@@ -101,16 +101,18 @@ public class UsersController {
 
 		Users users = usersDao.findById(id);
 		if(users!=null) {
-			List<Boards> boards = boardsDao.findByUsersId(id);
-				if(boards!=null) {
-					for (Boards b : boards) {
-						Integer bid = b.getId();
-						boardsDao.updateAnony(bid);
-					}
-				}
-				usersDao.delete(id);
-				sessoin.invalidate(); // 세션 무효화 시키기
-			}
-			return "redirect:/";
+			usersDao.delete(id);
+//			List<Boards> boards = boardsDao.findByUsersId(id);
+//			if(boards!=null) {
+//					for (Boards b : boards) {
+//						Integer bid = b.getId();
+//						boardsDao.updateAnony(bid);
+//					}
+//			}
+			// 이 로직이 뭐가 잘못 돼서 null -> 2 가 실행 안 된 거임?
+			boardsDao.updateAnony();
+			sessoin.invalidate(); // 세션 무효화 시키기
 		}
+		return "redirect:/";
+	}
 }
