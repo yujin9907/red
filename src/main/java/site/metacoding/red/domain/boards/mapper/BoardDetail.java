@@ -2,6 +2,10 @@ package site.metacoding.red.domain.boards.mapper;
 
 import java.sql.Timestamp;
 
+import lombok.Getter;
+import lombok.Setter;
+@Getter
+@Setter
 public class BoardDetail {
 	private Integer id;
 	private String title;

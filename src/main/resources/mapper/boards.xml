@@ -28,8 +28,8 @@
 	
 	<select id="findByIdToDetail" resultType="site.metacoding.red.domain.boards.mapper.BoardDetail">
 		SELECT b.id, b.title, b.content, b.usersId, b.createdAt,
-				u.id,u.username, u.password, u.email
-		FROM boards b INNER FOIN users u
+				u.username, u.password, u.email
+		FROM boards b INNER JOIN users u
 		ON b.usersId = u.id
 		WHERE b.id = #{id}
 	</select>
